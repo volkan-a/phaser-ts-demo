@@ -1,24 +1,32 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 export default class Demo extends Phaser.Scene {
+  scoreText?: Phaser.GameObjects.Text;
+  score = 0;
   constructor() {
-    super('GameScene');
+    super("GameScene");
   }
 
   preload() {
-    this.load.image('logo', 'assets/phaser3-logo.png');
+    this.load.image("bg", "assets/Grayskull.jpg");
   }
 
   create() {
-    const logo = this.add.image(400, 70, 'logo');
+    this.add.image(500, 400, "bg");
+    this.scoreText = this.add.text(32, 32, "0", {
+      fontSize: "32px",
+      backgroundColor: "red",
+      color: "black",
+      padding: { x: 10, y: 10 },
+      fontFamily: "Segoe UI",
+    });
 
-    this.tweens.add({
-      targets: logo,
-      y: 350,
-      duration: 1500,
-      ease: 'Sine.inOut',
-      yoyo: true,
-      repeat: -1
+    var fKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+    fKey.on("down", () => {
+      this.score += parseInt((Math.random() * 100).toString());
+      this.scoreText?.setText(this.score.toString());
     });
   }
+
+  update(time: number, delta: number): void {}
 }
