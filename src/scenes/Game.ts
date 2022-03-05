@@ -2,31 +2,49 @@ import Phaser from "phaser";
 
 export default class Demo extends Phaser.Scene {
   scoreText?: Phaser.GameObjects.Text;
-  score = 0;
+  totalScore = 0;
+  circleScore = 0;
+  timedEvent?: Phaser.Time.TimerEvent;
+  graphics?: Phaser.GameObjects.Graphics;
   constructor() {
     super("GameScene");
   }
 
-  preload() {
-    this.load.image("bg", "assets/Grayskull.jpg");
+  preload() {}
+
+  updateScore() {
+    for (let i = 0; i < 250; ++i) {
+      this.totalScore += 1;
+      var x = Phaser.Math.Between(150, 350);
+      var y = Phaser.Math.Between(150, 350);
+      if (Math.sqrt(Math.pow(x - 250, 2) + Math.pow(y - 250, 2)) <= 100) {
+        this.graphics?.fillStyle(0x0000ff, 1);
+        this.circleScore += 1;
+      } else {
+        this.graphics?.fillStyle(0xffffff, 1);
+      }
+      var point = new Phaser.Geom.Point(x, y);
+      this.graphics?.fillPointShape(point);
+    }
+    this.scoreText?.setText(
+      ((4 * this.circleScore) / this.totalScore).toString()
+    );
   }
 
   create() {
-    this.add.image(500, 400, "bg");
+    var square = new Phaser.Geom.Rectangle(150, 150, 200, 200);
+    var circle = new Phaser.Geom.Circle(250, 250, 100);
+    this.graphics = this.add.graphics({ fillStyle: { color: 0xff0000 } });
+    this.graphics.fillRectShape(square);
+    this.graphics.fillStyle(0x00ff00, 1);
+    this.graphics.fillCircleShape(circle);
     this.scoreText = this.add.text(32, 32, "0", {
-      fontSize: "32px",
-      backgroundColor: "red",
-      color: "black",
-      padding: { x: 10, y: 10 },
-      fontFamily: "Segoe UI",
-    });
-
-    var fKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
-    fKey.on("down", () => {
-      this.score += parseInt((Math.random() * 100).toString());
-      this.scoreText?.setText(this.score.toString());
+      font: "24px Courier",
+      color: "#00ff00",
     });
   }
 
-  update(time: number, delta: number): void {}
+  update(time: number, delta: number): void {
+    this.updateScore();
+  }
 }
